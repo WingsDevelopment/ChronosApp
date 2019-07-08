@@ -1,0 +1,33 @@
+﻿@model ExpenseTypeViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Create new expense type</h6>
+    </div>
+    <div class="card-body">
+        <form class="w3-container" style="text-align:left" method="post"
+              asp-controller="ExpenseType"
+              asp-action="CreateExpenseType">
+            <div>
+                <label>Expense type name:</label>
+                <input type="text" class="form-control"
+                       placeholder="Name" style="width: 30%; display: inline"
+                       name="ExpenseTypeName"
+                       required
+                       asp-for="ExpenseTypeName">
+            </div>
+            <br />
+            <div>
+                <label>Expense type discription:</label>
+                <br />
+                <textarea type="text" class="form-control"
+                       placeholder="Discription" style="width: 45%; display: inline"
+                       rows="5" cols="50"
+                       name="Discription"
+                       asp-for="Discription"></textarea>
+            </div>
+            <br />
+            <input class="btn btn-success" type="submit" name="Add" value="Save" />
+        </form>
+    </div>
+</div>

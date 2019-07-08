@@ -1,0 +1,60 @@
+﻿@model ExpenseViewModel
+<body>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Enter new expense</h6>
+        </div>
+        <div class="card-body">
+            <form class="w3-container" style="text-align:left" method="post"
+                  asp-controller="Expense"
+                  asp-action="CreateExpense">
+
+                <p>Amount*: </p>
+                <input type="number" class="form-control" id="amount"
+                       placeholder="Enter the amount" style="width: 30%; display: inline"
+                       name="Amount" required oninput="checkInput(this)">
+                <br />
+                <br />
+                <div>
+                    <label>Expense type*:</label>
+                    <select class="selectpicker"
+                            asp-for="ExpenseTypeId"
+                            name="ExpenseTypeId"
+                            asp-items="Model.ExpenseTypes"
+                            id="project-id"></select>
+                </div>
+                <br />
+
+                <p>Select method of paiment*: </p>
+                <select class="selectpicker" asp-items="Html.GetEnumSelectList<MethodOfPayment>()"
+                        asp-for="MethodOfPayment" name="MethodOfPayment"></select>
+
+                <br />
+                <br />
+
+                <p>
+                    Select Date*:
+                    <input type="text"
+                           class="form-control"
+                           style="width: 30%; display: inline"
+                           name="Date"
+                           id="date"
+                           required
+                           autocomplete="off">
+                </p>
+                <br />
+                <br />
+
+                <br />
+                <input class="btn btn-success" type="submit" name="Save" value="Save" />
+            </form>
+        </div>
+    </div>
+</body>
+
+<script>
+    $("#date").datepicker({
+        dateFormat: "dd-M-yy",
+    });
+    $('#date').datepicker('setDate', new Date());
+</script>

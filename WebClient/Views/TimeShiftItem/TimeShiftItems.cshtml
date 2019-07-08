@@ -1,0 +1,311 @@
+﻿@model ListOfTimeShiftItemsViewModel
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Time worked</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GetTimeFromMinutes(Model.TimeShiftDuration)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-marker fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Off time</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GetDaysFromMinutes(Model.OffTimeDuration)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-bath fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total time</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GetTimeFromMinutes(Model.OffTimeDuration + Model.TimeShiftDuration)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Work done</div>
+                        <div class="row no-gutters align-items-center">
+                            <div class="col-auto">
+                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">@Model.GetProgress().ToString("N1")%</div>
+                            </div>
+                            <div class="col">
+                                <div class="progress progress-sm mr-2">
+                                    <div class="progress-bar bg-info" id="progressbar" role="progressbar" style="width: 0%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12 col-lg-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">TimeShiftItems</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+
+                    <form class="w3-container" style="text-align:left" method="get"
+                          asp-controller="TimeShiftItem"
+                          asp-action="Index">
+                        <input class="btn btn-primary" type="submit" name="Add" value="Add new" />
+                    </form>
+
+                    <br />
+                    <table class="table table-bordered" id="dataTable" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Project</th>
+                                <th>Duration</th>
+                                <th>Is Billable</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.TimeShiftItems)
+                            {
+                                <tr>
+                                    @{var hours = item.Duration / 60;}
+                                    @{var mins = item.Duration % 60;}
+                                    <td>@item.Date.ToShortDateString()</td>
+                                    <td>@item.Project.ProjectName</td>
+                                    <td>@hours h @mins m</td>
+                                    <td>@item.IsBillable</td>
+                                    <td width="10%">
+                                        <button type="button"
+                                                class="btn btn-info"
+                                                data-toggle="modal"
+                                                data-target="#discriptionModal"
+                                                onclick="return ShowDiscription('@item.Discription');">
+                                            Discription
+                                        </button>
+                                    </td>
+                                    <td width="10%">
+                                        <button type="button"
+                                                class="btn btn-primary"
+                                                data-toggle="modal"
+                                                data-target="#exampleModal"
+                                                onclick="return InitiPopup('@item.Discription', '@item.Date',
+                                                @item.ProjectId, '@item.IsBillable', @item.Id,
+                                                @item.EmployeeId, '@item.Duration', '@item.IsDeleted');">
+                                            Edit
+                                        </button>
+                                    </td>
+                                    <td width="10%">
+                                        <form class="w3-container" style="text-align:left" method="get"
+                                              asp-controller="TimeShiftItem"
+                                              asp-action="DeleteTimeShiftItem"
+                                              asp-route-id="@item.Id">
+                                            <input class="btn btn-danger" type="submit" name="Delete" value="Delete" />
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Edit time shift item</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <p>
+                                        Date:
+                                        <input type="text"
+                                               class="form-control"
+                                               style="width: 30%; display: inline"
+                                               name="Date"
+                                               id="medal-date"
+                                               autocomplete="off">
+                                    </p>
+                                    <br />
+                                    <br />
+
+                                    <div class="form-group">
+                                        <label for="recipient-name" class="col-form-label">Project:</label>
+                                        <select class="selectpicker" name="ProjectId"
+                                                asp-items="Model.Projects"
+                                                id="medal-project-id"></select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="recipient-name" class="col-form-label">Duration:</label>
+                                        <input type="text" class="form-control" id="medal-duration">
+                                    </div>
+
+                                    <div class="checkbox">
+                                        <label class="col-form-label">
+                                            Is billable: <input type="checkbox"
+                                                                name="IsBillable"
+                                                                checked="checked"
+                                                                id="medal-billable">
+                                        </label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="message-text" class="col-form-label">Discription:</label>
+                                        <textarea class="form-control" id="medal-discription"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="return updateTimeShiftItem()">Save</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal fade" id="discriptionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Discription</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="message-text" class="col-form-label">Discription:</label>
+                                        <textarea readonly class="form-control" id="medal-discription-discription"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var filterDict = {};
+    filterDict["User: "] = '@Model.UserName';
+    filterDict["From: "] = '@Model.DateFrom.ToShortDateString()';
+    filterDict["To: "] = '@Model.DateTo.ToShortDateString()';
+    showFilterData(filterDict, "left");
+</script>
+
+<script>
+    $(document).ready(function () {
+        var width = @Model.GetProgress();
+        var progressbar = document.getElementById("progressbar");
+        progressbar.style.width = width + "%";
+    });
+
+    var currentSelectedTimeShiftItem = {};
+
+    function ShowDiscription(discription) {
+        document.getElementById("medal-discription-discription").value = discription;
+    }
+
+    function InitiPopup(discription, date, projectId,
+                        isBillable, id, employeeId, duration, isDeleted) {
+        document.getElementById("medal-duration").value = duration;
+
+        document.getElementById("medal-discription").value = discription;
+
+
+        $("#medal-date").datepicker({
+            dateFormat: "dd-M-yy",
+        });
+        $('#medal-date').datepicker('setDate', new Date(date));
+
+        document.getElementById("medal-project-id").value = projectId;
+
+        if (isBillable == 'True') {
+            document.getElementById("medal-billable").checked = true;
+        }
+        else {
+            document.getElementById("medal-billable").checked = false;
+        }
+
+        currentSelectedTimeShiftItem = { id: id, employeeId: employeeId, isDeleted: isDeleted }
+    }
+
+    function updateTimeShiftItem() {
+        if (currentSelectedTimeShiftItem == null) {
+            return;
+        }
+
+        var viewModel = {
+            id: currentSelectedTimeShiftItem.id,
+            projectId: document.getElementById("medal-project-id").value,
+            duration: document.getElementById("medal-duration").value,
+            isBillable: document.getElementById("medal-billable").checked,
+            date: new Date($('#medal-date').datepicker('getDate')).toUTCString(),
+            discription: document.getElementById("medal-discription").value,
+            employeeId: currentSelectedTimeShiftItem.employeeId,
+            isDeleted: currentSelectedTimeShiftItem.isDeleted
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "/TimeShiftItem/UpdateTimeShiftItem",
+            data: viewModel,
+            contentType: "application/json",
+
+            success: function (result) {
+                location.reload();
+            },
+            error: function (result) {
+                alert('Error: ', result.message);
+            }
+        });
+    }
+</script>

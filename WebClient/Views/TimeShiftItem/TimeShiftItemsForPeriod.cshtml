@@ -1,0 +1,83 @@
+﻿@model SelectListOfEmployeesViewModel
+<head>
+    <style>
+    </style>
+</head>
+<body>
+    <div class="card shadow mb-4"  style="margin: auto;width: 65%; text-align: center">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Periodic analysis for my time shifts</h6>
+        </div>
+        <div class="card-body">
+            <form class="w3-container" style="text-align:left" method="post"
+                  asp-controller="TimeShiftItem"
+                  asp-action="TimeShiftItemsForPeriod">
+
+                <div class="centered-elements">
+                    <label>
+                        Select period*:
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           style="width: 48%; display: inline"
+                           name="DateFrom"
+                           id="date-from"
+                           autocomplete="off"
+                           onchange="UpdateTimeTo()">
+                    <p><strong> - </strong></p>
+                    <input type="text"
+                           class="form-control"
+                           style="width: 48%; display: inline"
+                           name="DateTo"
+                           id="date-to"
+                           autocomplete="off"
+                           onchange="UpdateTimeFrom()">
+                </div>
+                <div class="centered-elements">
+                    <p>Business days selected: </p>
+                    <strong id="working-days"> </strong>
+                </div>
+                <br />
+
+                <label>Select page type: </label>
+                <label class="radio-inline">
+                    <input type="radio" name="ViewType" value="@ViewType.Table" onchange="UpdateChartTypeDiv(this)" checked>Table
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="ViewType" value="@ViewType.Chart" onchange="UpdateChartTypeDiv(this)">Chart
+                </label>
+
+                <div id="chart-type" style="display: none">
+                    <label>Select chart type: </label>
+                    <label class="radio-inline">
+                        <input type="radio" asp-for="ChartType" name="ChartType" value="@ChartType.Bar" checked>Bar chart
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" asp-for="ChartType" name="ChartType" value="@ChartType.Line">Line chart
+                    </label>
+                </div>
+                <br />
+                <div style="text-align: right">
+                    <input class="btn btn-success" type="submit" name="Save" value="Submit" />
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    configureDatePickerAndSetToFirstDayOfMonth("date-from");
+    configureDatePickerAndSetToLastDayOfMonth("date-to");
+
+    updateBusinessDayElement($("#date-from").datepicker('getDate'), $("#date-to").datepicker('getDate'));
+</script>
+
+<script>
+    function UpdateChartTypeDiv(element) {
+        if (element.value == "@ViewType.Table") {
+            $("#chart-type").hide(200);
+        }
+        else if (element.value == "@ViewType.Chart"){
+            $("#chart-type").show(200);
+        }
+    }
+</script>

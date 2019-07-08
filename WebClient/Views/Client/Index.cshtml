@@ -1,0 +1,51 @@
+﻿@model ListOfClientsViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Clients</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <form class="w3-container" style="text-align:left" method="get"
+                  asp-controller="Client"
+                  asp-action="CreateClient">
+                <input class="btn btn-info" type="submit" name="Create" value="Add new" />
+            </form>
+            <br />
+            <br />
+            <table class="table table-bordered" id="dataTable" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Client Name</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var client in Model.Clients)
+                    {
+                        <tr>
+                            <td>@client.ClientName</td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="get"
+                                      asp-controller="Client"
+                                      asp-action="UpdateClient"
+                                      asp-route-id="@client.Id">
+                                    <input class="btn btn-info" type="submit" name="Edit" value="Edit" />
+                                </form>
+                            </td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="get"
+                                      asp-controller="Client"
+                                      asp-action="DeleteClient"
+                                      asp-route-id="@client.Id">
+                                    <input class="btn btn-danger" type="submit" name="Delete" value="Delete" />
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

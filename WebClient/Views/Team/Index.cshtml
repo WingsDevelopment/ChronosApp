@@ -1,0 +1,53 @@
+﻿@model ListOfTeamsViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Teams</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+
+            <form class="w3-container" style="text-align:left" method="get"
+                  asp-controller="Team"
+                  asp-action="CreateTeam">
+                <input class="btn btn-primary" type="submit" name="Add" value="Add new" />
+            </form>
+
+            <br />
+            <br />
+            <table class="table table-bordered" id="dataTable" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Team Name</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var team in Model.Teams)
+                    {
+                        <tr>
+                            <td>@team.TeamName</td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="get"
+                                      asp-controller="Team"
+                                      asp-action="UpdateTeam"
+                                      asp-route-id="@team.Id">
+                                    <input class="btn btn-info" type="submit" name="Edit" value="Edit" />
+                                </form>
+                            </td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="get"
+                                      asp-controller="Team"
+                                      asp-action="DeleteTeam"
+                                      asp-route-id="@team.Id">
+                                    <input class="btn btn-danger" type="submit" name="Delete" value="Delete" />
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

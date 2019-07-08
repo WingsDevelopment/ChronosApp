@@ -1,0 +1,163 @@
+﻿@model ListOfExpensesViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Expenses</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <form class="w3-container" style="text-align:left" method="get"
+                  asp-controller="Expense"
+                  asp-action="CreateExpense">
+                <input class="btn btn-primary" type="submit" name="Add" value="Add new" />
+            </form>
+            <br />
+            <br />
+            <table class="table table-bordered" id="dataTable" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Expense type</th>
+                        <th>Method of payment</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var expense in Model.Expenses)
+                    {
+                        <tr>
+                            <td>@expense.Amount</td>
+                            <td>@expense.Date.ToShortDateString()</td>
+                            <td>@expense.ExpenseType?.ExpenseTypeName</td>
+                            <td>@expense.MethodOfPayment</td>
+                            <td width="10%">
+                                <button type="button"
+                                        class="btn btn-primary"
+                                        data-toggle="modal"
+                                        data-target="#exampleModal"
+                                        onclick="return InitPopup(@expense.Id, @expense.Amount,
+                                        '@expense.Date', @expense.ExpenseTypeId, '@( (Int16) expense.MethodOfPayment )',
+                                        '@expense.IsDeleted');">
+                                    Edit
+                                </button>
+                            </td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="get"
+                                      asp-controller="Expense"
+                                      asp-action="DeleteExpense"
+                                      asp-route-id="@expense.Id">
+                                    <input class="btn btn-danger" type="submit" name="Delete" value="Delete" />
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit off time</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <p>Amount*: </p>
+                            <input type="number" class="form-control" id="modal-amount"
+                                   placeholder="Amount" style="width: 100%; display: inline"
+                                   name="Amount">
+                            <br />
+                            <br />
+                            <p>
+                                Date:
+                                <input type="text"
+                                       class="form-control"
+                                       style="width: 30%; display: inline"
+                                       name="Date"
+                                       id="modal-date"
+                                       autocomplete="off">
+                            </p>
+                            <br />
+                            <br />
+                            <br />
+                            <div>
+                                <label>Expense type*:</label>
+                                <select class="selectpicker" asp-items="@Model.ExpenseTypes"
+                                        name="ExpenseTypeId"
+                                        id="modal-expense-type-id"></select>
+                            </div>
+                            <br />
+
+                            <p>Select method of paiment*: </p>
+                            <select class="selectpicker" asp-items="Html.GetEnumSelectList<MethodOfPayment>()"
+                                    name="MethodOfPayment" id="modal-method-of-payment"></select>
+
+                            <br />
+                            <br />
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="modal-save" onclick="updateExpense()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var currentSelectedExpense = {};
+
+    function InitPopup(id, amount, date, expenseTypeId, methodOfPayment, isDeleted) {
+        document.getElementById("modal-method-of-payment").value = methodOfPayment;
+
+        document.getElementById("modal-expense-type-id").value = expenseTypeId;
+
+        $("#modal-date").datepicker({
+            dateFormat: "dd-M-yy",
+        });
+        $('#modal-date').datepicker('setDate', new Date(date));
+
+        document.getElementById("modal-amount").value = amount;
+
+        currentSelectedExpense = { id: id, isDeleted: isDeleted }
+    }
+
+    function updateExpense() {
+        if (currentSelectedExpense == null) {
+            return;
+        }
+
+        var viewModel = {
+            id: currentSelectedExpense.id,
+            methodOfPayment: document.getElementById("modal-method-of-payment").value,
+            expenseTypeId: document.getElementById("modal-expense-type-id").value,
+            date: new Date($('#modal-date').datepicker('getDate')).toUTCString(),
+            amount: document.getElementById("modal-amount").value,
+            isDeleted: currentSelectedExpense.isDeleted
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "/Expense/UpdateExpense",
+            data: viewModel,
+            contentType: "application/json",
+
+            success: function (result) {
+                location.reload();
+            },
+            error: function (result) {
+                alert('Error: ', result.message);
+            }
+        });
+    }
+</script>

@@ -1,0 +1,166 @@
+﻿@model ChartTimeShiftItemForProjectPerEmployeeViewModel
+
+<div class="row" id="main-div">
+    <div class="col-xl-8 col-lg-8">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Accordion -->
+            <a href="#project-card" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                <h6 class="m-0 font-weight-bold text-primary">By employee</h6>
+            </a>
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="project-card" style="">
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                        <canvas id="project-statistics" width="409" height="367" class="chartjs-render-monitor" style="display: block; height: 245px; width: 273px;"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-lg-4">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Accordion -->
+            <a href="#billable-card" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                <h6 class="m-0 font-weight-bold text-primary">Time</h6>
+            </a>
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="billable-card" style="">
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                        <canvas id="billable-not-billable" width="409" height="367" class="chartjs-render-monitor" style="display: block; height: 245px; width: 273px;"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-success"></i> Billable
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-primary"></i> Not Billable
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-12 col-lg-12" id="template-area" style="display: none">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Basic Card Example</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-area">
+                    <div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                    <canvas id="template-canvas" width="916" height="480" class="chartjs-render-monitor" style="display: block; height: 320px; width: 611px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Page level plugins -->
+<script src="~/vendor/chart.js/Chart.min.js"></script>
+<script src="~/js/my-chart.js"></script>
+
+<script>
+    var filterDict = {};
+    filterDict["Project : "] = '@Model.ProjectName';
+    filterDict["From : "] = '@Model.DateFrom.ToShortDateString()';
+    filterDict["To : "] = '@Model.DateTo.ToShortDateString()';
+    showFilterData(filterDict, "down");
+</script>
+
+<script>
+    setTimeout(function () { initStatisticsByEmployeeChart(); }, 10);
+    setTimeout(function () { initBillableChart(); }, 350);
+
+    setTimeout(function () { initProjectStatisticsPerEmployeeChart(); }, 500);
+</script>
+<script>
+    var bnb = document.getElementById("billable-not-billable");
+    var ps = document.getElementById("project-statistics");
+
+    function initBillableChart() {
+        InitialazeDoughnutChart(bnb,
+            [@Model.TimeShiftDurationNotBillable, @Model.TimeShiftDurationBillable],
+            ["Not Billable(mins)", "Billable(mins)"],
+            false);
+    }
+
+    function initStatisticsByEmployeeChart() {
+        var statisticsByEmployeeData = [];
+        var statisticsByEmployeeLabels = [];
+
+        @foreach(var par in Model.StatisticsByEmployee)
+        {
+            @:statisticsByEmployeeData.push('@par.Value');
+            @:statisticsByEmployeeLabels.push('@par.Key');
+        }
+
+        InitialazeDoughnutChart(ps,
+            statisticsByEmployeeData,
+            statisticsByEmployeeLabels,
+            true);
+    }
+
+</script>
+
+<script>
+
+</script>
+
+<script>
+    function CreateAreaElementAndGetCanvas(newId) {
+        var templateArea = document.getElementById("template-area");
+
+        // Copy the <li> element and its child nodes
+        var clonedTemplateArea = templateArea.cloneNode(true);
+        clonedTemplateArea.style.display = "block";
+
+        clonedTemplateArea.id = newId + "-parent-div";
+
+        var clonedTemplateCanvas = clonedTemplateArea.getElementsByClassName("chartjs-render-monitor")[0];
+        clonedTemplateArea.getElementsByClassName("m-0 font-weight-bold text-primary")[0].innerText = "Project: " + newId;
+        clonedTemplateCanvas.id = newId;
+
+        document.getElementById("main-div").appendChild(clonedTemplateArea);
+
+        return clonedTemplateCanvas;
+    }
+</script>
+
+<script>
+    function initProjectStatisticsPerEmployeeChart() {
+        var dataSetEmpId = {};
+
+        @foreach (var item in Model.ProjectStatisticsPerEmployee)
+        {
+            @:var labelsForTimeStatistics = [];
+            @:dataSetEmpId = {}
+            @foreach(var dateTimeEmpIdDurationPairs in item.TimeStatisticsByProjectPerEmployee)
+            {
+                @foreach(var empIdDurationPair in dateTimeEmpIdDurationPairs.Value)
+                {
+                    @:if (dataSetEmpId[@empIdDurationPair.Key] == null) {
+                        @:dataSetEmpId[@empIdDurationPair.Key] = Object.assign({}, new dataSet());
+                        @:dataSetEmpId[@empIdDurationPair.Key].backgroundColor = getRandomColor();
+                        @:dataSetEmpId[@empIdDurationPair.Key].label = '@Model.EmpIdEmpNameHelperDict[empIdDurationPair.Key]';
+                    @:}
+                    @:dataSetEmpId[@empIdDurationPair.Key].data.push(@empIdDurationPair.Value);
+                }
+
+                @:labelsForTimeStatistics.push("@dateTimeEmpIdDurationPairs.Key.ToShortDateString()");
+            }
+            @:var canvas = CreateAreaElementAndGetCanvas('@item.ProjectName');
+
+            @:InitialazeMultiAxisBarChart(canvas, dataSetEmpId, labelsForTimeStatistics);
+        }
+    }
+</script>

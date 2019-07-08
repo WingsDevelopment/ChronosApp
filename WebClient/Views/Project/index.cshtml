@@ -1,0 +1,53 @@
+﻿@model ListOfProjectsViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <form class="w3-container" style="text-align:left" method="get"
+                  asp-controller="Project"
+                  asp-action="CreateProject">
+                <input class="btn btn-primary" type="submit" name="Add" value="Add new" />
+            </form>
+            <br />
+            <br />
+            <table class="table table-bordered" id="dataTable" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Client</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var project in Model.Projects)
+                    {
+                        <tr>
+                            <td>@project.ProjectName</td>
+                            <td>@project.Client.ClientName</td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="get"
+                                      asp-controller="Project"
+                                      asp-action="UpdateProject"
+                                      asp-route-id="@project.Id">
+                                    <input class="btn btn-info" type="submit" name="Edit" value="Edit" />
+                                </form>
+                            </td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="get"
+                                      asp-controller="Project"
+                                      asp-action="DeleteProject"
+                                      asp-route-id="@project.Id">
+                                    <input class="btn btn-danger" type="submit" name="Delete" value="Delete" />
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

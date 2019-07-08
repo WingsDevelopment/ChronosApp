@@ -1,0 +1,56 @@
+﻿@model TimeShiftItemsByClientViewModel
+<body>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Analysis per employee</h6>
+        </div>
+        <div class="card-body">
+            <form class="w3-container" style="text-align:left" method="get"
+                  asp-controller="Client"
+                  asp-action="TimeShiftItemsChartForClientPerEmployeeView">
+
+                <label>Select client*: </label>
+                <select class="selectpicker"
+                        asp-items="@Model.Clients"
+                        name="ClientId"
+                        asp-for="ClientId"></select>
+                <br />
+                <br />
+                <p>
+                    Select Date*:
+                    <input type="text"
+                           class="form-control"
+                           style="width: 30%; display: inline"
+                           name="DateFrom"
+                           id="date-from"
+                           autocomplete="off"
+                           onchange="UpdateTimeTo()">
+                </p>
+                <p><strong> - </strong></p>
+                <p>
+                    <input type="text"
+                           class="form-control"
+                           style="width: 30%; display: inline"
+                           name="DateTo"
+                           id="date-to"
+                           autocomplete="off"
+                           onchange="UpdateTimeFrom()">
+                </p>
+                <p><strong>[ </strong></p>
+                <p><strong id="working-days"> </strong></p>
+                <p><strong> ]</strong></p>
+                <p> - Business Days</p>
+                <br />
+                <br />
+
+                <input class="btn btn-success" type="submit" name="Save" value="Save" />
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    configureDatePickerAndSetToFirstDayOfMonth("date-from");
+    configureDatePickerAndSetToLastDayOfMonth("date-to");
+
+    updateBusinessDayElement($("#date-from").datepicker('getDate'), $("#date-to").datepicker('getDate'));
+</script>

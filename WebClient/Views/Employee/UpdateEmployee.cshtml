@@ -1,0 +1,134 @@
+﻿@model EmployeeViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Manage user: @Model.UserName</h6>
+    </div>
+    <div class="card-body">
+        <form class="w3-container" style="text-align:left" method="post"
+              asp-controller="Employee"
+              asp-action="UpdateEmployee"
+              asp-route-id="@Model.Id"
+              asp-route-userName="@Model.UserName">
+            <div style="width: 50%; float:left">
+                <div>
+                    <label>Main project:</label>
+                    <select class="selectpicker" asp-for="MainProjectId" name="MainProjectId"
+                            asp-items="Model.PermitedProjectsSelect"
+                            id="project-id"></select>
+                </div>
+                <br />
+                <label>Hours per day:</label>
+                <div class="input-group">
+                    <div>
+                        @Html.TextAreaFor(model => model.HourPerDay, 1, 30, new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <br />
+                <label>Price level:</label>
+                <div class="input-group">
+                    <div>
+                        @Html.TextAreaFor(model => model.PriceLevel, 1, 30, new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <br />
+                <div>
+                    <label>Team : </label>
+                    <select class="selectpicker" name="TeamId"
+                            asp-items="Model.Teams"
+                            id="team-id"></select>
+                </div>
+                <br />
+                <input class="btn btn-success" type="submit" name="Add" value="Save" />
+            </div>
+
+        </form>
+        @if (User.IsInRole("Administrator"))
+        {
+            <div style="width: 50%; float:right">
+                <button type="button"
+                        class="btn btn-success"
+                        data-toggle="modal"
+                        data-target="#addProjectModal">
+                    Add user to project
+                </button>
+                <br />
+                <br />
+                @if (Model.PermitedProjectsSelect != null)
+                {
+                    <table class="table table-bordered" id="dataTable" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Permited Projects</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var project in Model.PermitedProjects)
+                            {
+                                <tr>
+                                    <td>@project?.ProjectName</td>
+                                    <td width="10%">
+                                        <form class="w3-container" style="text-align:left" method="post"
+                                              asp-controller="Employee"
+                                              asp-action="RemoveEmployeeFromProject"
+                                              asp-route-projectId="@project?.Id"
+                                              asp-route-employeeId="@Model.Id">
+                                            <input class="btn btn-danger" type="submit" name="Delete" value="Remove" />
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <br />
+                }
+            </div>
+            <br />
+        }
+
+        <div class="modal fade" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Select project</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <form asp-controller="Employee" asp-action="AddEmployeeToProject"
+                          asp-route-employeeId="@Model.Id">
+                        <br />
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label">Project:</label>
+                            <select class="selectpicker"
+                                    name="ProjectId"
+                                    asp-items="Model.AllProjects"
+                                    id="medal-project-id">
+                            </select>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <input class="btn btn-success" type="submit" name="Add" value="Add" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var selectValue1 = @Model.PermitedProjectsSelect?.Where(x => x.Selected).FirstOrDefault()?.Value;
+    var selectValue2 = @Model.Teams?.Where(x => x.Selected).FirstOrDefault()?.Value;
+
+    $("#project-id").val(selectValue1);
+    $("#team-id").val(selectValue2);
+
+    $('#project-id').selectpicker('refresh');
+    $('#team-id').selectpicker('refresh');
+</script>

@@ -1,0 +1,42 @@
+﻿@model ProjectViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Create new team</h6>
+    </div>
+    <div class="card-body">
+        <form class="w3-container" style="text-align:left" method="post"
+              asp-controller="Project"
+              asp-action="UpdateProject"
+              asp-route-id="@Model.Id">
+
+            <label>Project name</label>
+            <div class="input-group">
+                <div>
+                    @Html.TextAreaFor(model => model.ProjectName, 1, 30, new { @class = "form-control", required = "required" })
+                </div>
+            </div>
+
+            <br />
+            <div>
+                <label>Client:</label>
+                <select class="selectpicker" asp-for="ClientId" name="ClientId"
+                        asp-items="Model.Clients"
+                        id="project-id">
+                    <option value=""></option>
+                </select>
+            </div>
+
+            <br />
+            <input class="btn btn-success" type="submit" name="Add" value="Save" />
+        </form>
+    </div>
+</div>
+
+<script>
+    var selectValue1 = @Model.Clients.Where(x => x.Selected).FirstOrDefault().Value;
+
+    $("#project-id").val(selectValue1);
+
+    $('#project-id').selectpicker('refresh');
+</script>

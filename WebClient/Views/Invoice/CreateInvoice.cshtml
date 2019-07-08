@@ -1,0 +1,38 @@
+﻿@model InvoiceViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Create new invoice</h6>
+    </div>
+    <div class="card-body">
+        <form class="w3-container" style="text-align:left" method="post"
+              asp-controller="Invoice"
+              asp-action="CreateInvoice">
+
+            <p>Demand*: </p>
+            <input type="number" class="form-control" id="duration"
+                   placeholder="In minutes" style="width: 30%; display: inline"
+                   name="Demand" asp-for="Demand">
+            <br />
+            <br />
+            <p>Paid*: </p>
+            <input type="number" class="form-control" id="duration"
+                   placeholder="In minutes" style="width: 30%; display: inline"
+                   name="Paid" asp-for="Paid">
+            <br />
+            <br />
+
+            <label>Discription: </label>
+            <br />
+            <textarea type="text" class="form-control"
+                      placeholder="Discription" style="width: 45%; display: inline"
+                      rows="5" cols="50"
+                      name="Discription"
+                      asp-for="Discription"></textarea>
+
+            <br />
+            <br />
+            <input class="btn btn-success" type="submit" name="Add" value="Save" />
+        </form>
+    </div>
+</div>

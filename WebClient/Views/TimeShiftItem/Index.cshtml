@@ -1,0 +1,93 @@
+﻿@model TimeShiftItemViewModel
+
+<body>
+    <div class="card shadow " style="margin: auto;width: 60%; text-align: center">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Enter working hours</h6>
+        </div>
+        <div class="card-body">
+            <form class="w3-container" style="text-align:left" method="post"
+                  asp-controller="TimeShiftItem"
+                  asp-action="CreateTimeShiftItem">
+                @if (Model.Projects == null || Model.Projects.Count == 0)
+                {
+                    <p>You are not a member of any projects! :(</p>
+                    <br />
+                }
+                else
+                {
+                    <div class="centered-elements">
+                        <label>
+                            Project*:
+                        </label>
+                        <select class="selectpicker"
+                                asp-for="ProjectId" name="ProjectId"
+                                asp-items="Model.Projects"
+                                required
+                                id="project-id"></select>
+                    </div>
+                }
+                <br />
+                <div class="centered-elements">
+                    <label>
+                        Select Date*:
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           display: inline"
+                           name="Date"
+                           id="date"
+                           required
+                           autocomplete="off">
+                </div>
+
+                <br />
+                <div class="centered-elements">
+                    <label>
+                        Duration (in minutes)*:
+                    </label>
+                    <input type="number" class="form-control" id="duration"
+                           placeholder="In minutes" style=" display: inline"
+                           required
+                           name="Duration" asp-for="Duration">
+                </div>
+                <br />
+                <div class="centered-elements">
+                    <div class="checkbox">
+                        <label>
+                            Is billable: <input type="checkbox" name="IsBillable" asp-for="IsBillable" checked="checked">
+                        </label>
+                    </div>
+                </div>
+                <br />
+                <textarea type="text" class="form-control"
+                          placeholder="Discription" style=" display: inline"
+                          rows="5" cols="50"
+                          name="Discription"
+                          asp-for="Discription"></textarea>
+
+                <br />
+                <div style="text-align: right">
+                    <input class="btn btn-success" type="submit" name="Save" value="Save" />
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    $("#date").datepicker({
+        dateFormat: "dd-M-yy",
+        beforeShowDay: $.datepicker.noWeekends
+    });
+    $('#date').datepicker('setDate', new Date());
+    
+    var durationElement = document.getElementById("duration");
+    durationElement.value = @Model.SuggestedMinutes;
+</script>
+<script>
+    var selectValue = @Model.Projects?.Where(x => x.Selected).FirstOrDefault()?.Value;
+    if (selectValue != null) {
+        var element = document.getElementById("project-id");
+        element.value = selectValue;
+    }
+</script>

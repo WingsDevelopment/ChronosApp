@@ -1,0 +1,32 @@
+﻿@model TeamViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Create new team</h6>
+    </div>
+    <div class="card-body">
+        <form class="w3-container" style="text-align:left" method="post"
+              asp-controller="Team"
+              asp-action="CreateTeam">
+            <div>
+                <label>Team name:</label>
+                <input type="text" class="form-control"
+                       placeholder="Name" style="width: 30%; display: inline"
+                       name="TeamName"
+                       required
+                       asp-for="TeamName">
+            </div>
+            <br />
+            <div>
+                <label>Project:</label>
+                <select class="selectpicker" asp-for="ProjectId" name="ProjectId" 
+                        asp-items="Model.Projects"
+                        required>
+                </select>
+            </div>
+
+            <br />
+            <input class="btn btn-success" type="submit" name="Add" value="Save" />
+        </form>
+    </div>
+</div>

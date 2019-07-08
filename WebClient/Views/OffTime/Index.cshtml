@@ -1,0 +1,88 @@
+﻿@model OffTimeViewModel
+
+<body>
+    <div class="card shadow mb-4" style="margin: auto;width: 65%; text-align: center">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Enter off days</h6>
+        </div>
+        <div class="card-body">
+            <form class="w3-container" style="text-align:left" method="post"
+                  asp-controller="OffTime"
+                  asp-action="CreateOffTime">
+
+                <div class="centered-elements">
+                    <label>
+                        Dates off*:
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           style="width: 48%; display: inline"
+                           name="DateFrom"
+                           id="date-from"
+                           required
+                           autocomplete="off"
+                           onchange="UpdateTimeTo()">
+                    <p><strong> - </strong></p>
+                    <input type="text"
+                           class="form-control"
+                           style="width: 48%; display: inline"
+                           name="DateTo"
+                           id="date-to"
+                           required
+                           autocomplete="off"
+                           onchange="UpdateTimeFrom()">
+                </div>
+                <div class="centered-elements">
+                    <p>Business days off: </p>
+                    <strong id="working-days"> </strong>
+                </div>
+
+                <br />
+                <div class="centered-elements">
+                    <label>
+                        Off time type*:
+                    </label>
+                    <select class="selectpicker"
+                            required
+                            asp-items="Html.GetEnumSelectList<OffTimeType>()"
+                            asp-for="OffTimeType" name="OffTimeType"></select>
+                </div>
+                <br />
+                <br />
+
+                <div class="centered-elements">
+                    <textarea type="text" class="form-control"
+                              placeholder="Discription" display: inline"
+                              rows="5" cols="50"
+                              name="Discription"
+                              asp-for="Discription"></textarea>
+                </div>
+                <br />
+                <div style="text-align: right">
+                    <input class="btn btn-success" type="submit" name="Save" value="Save" />
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    var currentDate = new Date();
+    $("#date-from").datepicker({
+        dateFormat: "dd-M-yy",
+        beforeShowDay: $.datepicker.noWeekends
+    });
+    $('#date-from').datepicker('setDate', currentDate);
+
+    $("#date-to").datepicker({
+        dateFormat: "dd-M-yy",
+        beforeShowDay: $.datepicker.noWeekends
+    });
+    $('#date-to').datepicker('setDate', currentDate);
+
+    if (currentDate.getDate() == 6 || currentDate.getDate() == 0) {
+        document.getElementById("working-days").innerText = 0;
+    }
+    else {
+        document.getElementById("working-days").innerText = 1;
+    }
+</script>

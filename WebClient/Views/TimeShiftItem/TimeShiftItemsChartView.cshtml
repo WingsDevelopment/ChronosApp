@@ -1,0 +1,188 @@
+﻿@model ChartTimeShiftItemViewModel
+
+<div class="row" id="main-div">
+    <div class="col-xl-4 col-lg-4">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Accordion -->
+            <a href="#time-card" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                <h6 class="m-0 font-weight-bold text-primary">Time</h6>
+            </a>
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="time-card" style="">
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                        <canvas id="time-off-time" width="409" height="367" class="chartjs-render-monitor" style="display: block; height: 245px; width: 273px;"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-success"></i> Work time
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-primary"></i> Off time
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-4">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Accordion -->
+            <a href="#project-card" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
+            </a>
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="project-card" style="">
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                        <canvas id="project-statistics" width="409" height="367" class="chartjs-render-monitor" style="display: block; height: 245px; width: 273px;"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-4">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Accordion -->
+            <a href="#billable-card" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                <h6 class="m-0 font-weight-bold text-primary">Time</h6>
+            </a>
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="billable-card" style="">
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                        <canvas id="billable-not-billable" width="409" height="367" class="chartjs-render-monitor" style="display: block; height: 245px; width: 273px;"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-success"></i> Billable
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-primary"></i> Not Billable
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-12 col-lg-12" id="template-area" style="display: none">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
+                <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                        <div class="dropdown-header">Dropdown Header:</div>
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-area">
+                    <div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                    <canvas id="template-canvas" width="916" height="480" class="chartjs-render-monitor" style="display: block; height: 320px; width: 611px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Page level plugins -->
+<script src="~/vendor/chart.js/Chart.min.js"></script>
+<script src="~/js/my-chart.js"></script>
+
+<script>
+    var filterDict = {};
+    filterDict["User: "] = '@Model.UserName';
+    filterDict["From: "] = '@Model.DateFrom.ToShortDateString()';
+    filterDict["To: "] = '@Model.DateTo.ToShortDateString()';
+    showFilterData(filterDict, "down");
+</script>
+
+<script>
+    setTimeout(function () { initDurationChart(); }, 10);
+    setTimeout(function () { initProjectStatisticChart(); }, 250);
+    setTimeout(function () { initBillableChart(); }, 450);
+
+    setTimeout(function () { initProjectStatisticsAreas(); }, 600);
+</script>
+<script>
+    var bnb = document.getElementById("billable-not-billable");
+    function initBillableChart() {
+        InitialazeDoughnutChart(bnb,
+            [@Model.TimeShiftDurationNotBillable, @Model.TimeShiftDurationBillable],
+            ["Not Billable(mins)", "Billable(mins)"],
+            false);
+    }
+</script>
+<script>
+    var tot = document.getElementById("time-off-time");
+    function initDurationChart() {
+        InitialazeDoughnutChart(tot,
+            [@Model.OffTimeDuration, @Model.TimeShiftDuration],
+            ["Off time(mins)", "Work time(mins)"],
+            false);
+    }
+</script>
+<script>
+    var ps = document.getElementById("project-statistics");
+    function initProjectStatisticChart() {
+        var numberOfProjectStatistics = @Model.ProjectStatistics.Count;
+        var dataForProjectStatisticsChart = [];
+        var labelsForProjectStatisticsChart = [];
+        @foreach(var ps in Model.ProjectStatistics)
+        {
+            @:dataForProjectStatisticsChart.push("@ps.Value");
+            @:labelsForProjectStatisticsChart.push("@ps.Key" + "(mins)");
+        }
+
+        InitialazeDoughnutChart(ps,
+            dataForProjectStatisticsChart,
+            labelsForProjectStatisticsChart,
+            true);
+    }
+</script>
+<script>
+    function initProjectStatisticsAreas() {
+        @foreach(var item in Model.ProjectStatisticsHelpers)
+        {
+            @:var dateForTimeStatistics = [];
+            @:var labelsForTimeStatistics = [];
+
+            @foreach (var dicItem in item.TimeStatisticsByProject)
+            {
+                @:dateForTimeStatistics.push("@dicItem.Value");
+                @:labelsForTimeStatistics.push("@dicItem.Key.ToShortDateString()");
+            }
+
+            @:var canvas = CreateAreaElementAndGetCanvas('@item.ProjectName');
+
+            if(Model.ChartType == ChartType.Bar)
+            {
+                @:InitialazeBarChart(canvas, dateForTimeStatistics, labelsForTimeStatistics);
+            }
+            else
+            {
+                @:InitialazeLineChart(canvas, dateForTimeStatistics, labelsForTimeStatistics);
+            }
+        }
+    }
+</script>

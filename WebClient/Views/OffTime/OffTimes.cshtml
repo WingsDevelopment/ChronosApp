@@ -1,0 +1,306 @@
+﻿@model ListOfOffTimesViewModel
+
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Free days</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GetNumberOfOffTimesByType(OffTimeType.FreeDay)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-bath fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Holidays</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GetNumberOfOffTimesByType(OffTimeType.Holiday)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-tree fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Sick leave</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GetNumberOfOffTimesByType(OffTimeType.SickLeave)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-sad-cry fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Unpaid days</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GetNumberOfOffTimesByType(OffTimeType.UnpaidTime)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">OffTimes</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+
+            <form class="w3-container" style="text-align:left" method="get"
+                  asp-controller="OffTime"
+                  asp-action="Index">
+                <input class="btn btn-primary" type="submit" name="Add" value="Add new" />
+            </form>
+
+            <br />
+            <table class="table table-bordered" id="dataTable" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Off time type</th>
+                        <th>Approve status</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OffTimes)
+                    {
+                        <tr>
+                            <td>@item.Date.ToShortDateString()</td>
+                            <td>@item.OffTimeType</td>
+                            @if (User.IsInRole("Administrator"))
+                            {
+                                @if (!item.IsApproved)
+                                {
+                                    <td width="18%">
+                                        <button type="button"
+                                                class="btn btn-success"
+                                                onclick="return approveOffTime('@item.Id');">
+                                            Approve
+                                        </button>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>Approved</td>
+                                }
+                            }
+                            else
+                            {
+                                @if (item.IsApproved)
+                                {
+                                    <td>Approved</td>
+                                }
+                                else
+                                {
+                                    <td>Not approved</td>
+                                }
+                            }
+                            <td width="10%">
+                                <button type="button"
+                                        class="btn btn-info"
+                                        data-toggle="modal"
+                                        data-target="#discriptionModal"
+                                        onclick="return ShowDiscription('@item.Discription');">
+                                    Discription
+                                </button>
+                            </td>
+                            <td width="10%">
+                                <button type="button"
+                                        class="btn btn-primary"
+                                        data-toggle="modal"
+                                        data-target="#exampleModal"
+                                        onclick="return InitPopup('@item.Date', @item.Id,
+                                                @item.EmployeeId, '@( (Int16) item.OffTimeType )', '@item.IsApproved',
+                                               '@item.Discription', '@item.IsDeleted');">
+                                    Edit
+                                </button>
+                            </td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="get"
+                                      asp-controller="OffTime"
+                                      asp-action="DeleteOffTime"
+                                      asp-route-id="@item.Id">
+                                    <input class="btn btn-danger" type="submit" name="Delete" value="Delete" />
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit off time</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <p>
+                                Date:
+                                <input type="text"
+                                       class="form-control"
+                                       style="width: 30%; display: inline"
+                                       name="Date"
+                                       id="medal-date"
+                                       autocomplete="off">
+                            </p>
+                            <br />
+                            <br />
+
+                            <p>Select off time type*: </p>
+                            <select class="selectpicker" asp-items="Html.GetEnumSelectList<OffTimeType>()"
+                                    name="OffTimeType" id="medal-off-time-type"></select>
+
+                            <div class="form-group">
+                                <label for="message-text" class="col-form-label">Discription:</label>
+                                <textarea class="form-control" id="medal-discription"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="modal-save" onclick="updateOffTime()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="discriptionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Discription</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="message-text" class="col-form-label">Discription:</label>
+                                <textarea readonly class="form-control" id="medal-discription-discription"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var filterDict = {};
+    filterDict["User : "] = '@Model.UserName';
+    filterDict["Date : "] = 'From begging of time';
+    showFilterData(filterDict, "left");
+</script>
+
+<script>
+    var currentSelectedOffTime = {};
+    function ShowDiscription(discription) {
+        document.getElementById("medal-discription-discription").value = discription;
+    }
+
+    function InitPopup(date, id, employeeId, offTimeType, isApproved, discription, isDeleted) {
+        document.getElementById("medal-off-time-type").value = offTimeType;
+
+        $("#medal-date").datepicker({
+            dateFormat: "dd-M-yy",
+        });
+        $('#medal-date').datepicker('setDate', new Date(date));
+
+        document.getElementById("medal-discription").value = discription;
+
+        currentSelectedOffTime = { id: id, employeeId: employeeId, isApproved: isApproved, isDeleted: isDeleted }
+    }
+
+    function updateOffTime() {
+        if (currentSelectedOffTime == null) {
+            return;
+        }
+
+        var viewModel = {
+            id: currentSelectedOffTime.id,
+            offTimeType: document.getElementById("medal-off-time-type").value,
+            date: new Date($('#medal-date').datepicker('getDate')).toUTCString(),
+            discription: document.getElementById("medal-discription").value,
+            employeeId: currentSelectedOffTime.employeeId,
+            isApproved: currentSelectedOffTime.isApproved,
+            isDeleted: currentSelectedOffTime.isDeleted
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "/OffTime/UpdateOffTime",
+            data: viewModel,
+            contentType: "application/json",
+
+            success: function (result) {
+                location.reload();
+            },
+            error: function (result) {
+                alert('Error: ', result.message);
+            }
+        });
+    }
+
+    function approveOffTime(id) {
+        var viewModel = {
+            id: id,
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "/OffTime/ApproveOffTime",
+            data: viewModel,
+            contentType: "application/json",
+
+            success: function (result) {
+                location.reload();
+            },
+            error: function (result) {
+                alert('Error: ', result.message);
+            }
+        });
+    }
+</script>

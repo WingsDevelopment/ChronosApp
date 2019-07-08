@@ -1,0 +1,65 @@
+﻿@model ListOfEmployeesViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Employees</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+
+            @*<form class="w3-container" style="text-align:left" method="get"
+                  asp-controller="Employee"
+                  asp-action="CreateEmployee">
+                <input class="btn btn-primary" type="submit" name="Add" value="Add new" />
+            </form>*@
+
+            <br />
+            <table class="table table-bordered" id="dataTable" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>User Name</th>
+                        <th>Hour Per Day</th>
+                        <th>Price Level</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var employee in Model.Employees)
+                    {
+                        <tr>
+                            <td>@employee.UserName</td>
+                            <td>@employee.HourPerDay</td>
+                            <td>@employee.PriceLevel</td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="post"
+                                      asp-controller="TimeShiftItem"
+                                      asp-action="TimeShiftItemsForPeriodForEmployee"
+                                      asp-route-employeeId="@employee.Id">
+                                    <input class="btn btn-info" type="submit" name="Analysis" value="Analysis" />
+                                </form>
+                            </td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="post"
+                                      asp-controller="OffTime"
+                                      asp-action="OffTimesAllTimeForEmployee"
+                                      asp-route-employeeId="@employee.Id">
+                                    <input class="btn btn-info" type="submit" name="Analysis" value="Day offs" />
+                                </form>
+                            </td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="get"
+                                      asp-controller="Employee"
+                                      asp-action="UpdateEmployee"
+                                      asp-route-id="@employee.Id">
+                                    <input class="btn btn-primary" type="submit" name="Manage" value="Manage" />
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+﻿@model ProjectViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Create new project</h6>
+    </div>
+    <div class="card-body">
+        <form class="w3-container" style="text-align:left" method="post"
+              asp-controller="Project"
+              asp-action="CreateProject">
+            <div>
+                <label>Project name:</label>
+                <input type="text" class="form-control"
+                       placeholder="Name" style="width: 30%; display: inline"
+                       name="ProjectName"
+                       required
+                       asp-for="ProjectName">
+            </div>
+            <br />
+            <div>
+                <label>Client:</label>
+                <select class="selectpicker" 
+                        required 
+                        asp-for="ClientId" name="ClientId" asp-items="Model.Clients">
+                </select>
+            </div>
+
+            <br />
+            <input class="btn btn-success" type="submit" name="Add" value="Save" />
+        </form>
+    </div>
+</div>

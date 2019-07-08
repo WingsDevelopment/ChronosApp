@@ -1,0 +1,51 @@
+﻿@model ListOfExpenseTypesViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">ExpenseTypes</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <form class="w3-container" style="text-align:left" method="get"
+                  asp-controller="ExpenseType"
+                  asp-action="CreateExpenseType">
+                <input class="btn btn-info" type="submit" name="Create" value="Add new" />
+            </form>
+            <br />
+            <br />
+            <table class="table table-bordered" id="dataTable" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ExpenseType Name</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var expenseType in Model.ExpenseTypes)
+                    {
+                        <tr>
+                            <td>@expenseType.ExpenseTypeName</td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="get"
+                                      asp-controller="ExpenseType"
+                                      asp-action="UpdateExpenseType"
+                                      asp-route-id="@expenseType.Id">
+                                    <input class="btn btn-info" type="submit" name="Edit" value="Edit" />
+                                </form>
+                            </td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="get"
+                                      asp-controller="ExpenseType"
+                                      asp-action="DeleteExpenseType"
+                                      asp-route-id="@expenseType.Id">
+                                    <input class="btn btn-danger" type="submit" name="Delete" value="Delete" />
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

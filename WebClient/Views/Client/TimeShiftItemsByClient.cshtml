@@ -1,0 +1,87 @@
+﻿@model TimeShiftItemsByClientViewModel
+
+<body>
+    <div class="card shadow mb-4" style="margin: auto;width: 65%; text-align: center">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Analyisis for client</h6>
+        </div>
+        <div class="card-body">
+            <form class="w3-container" style="text-align:left" method="get"
+                  asp-controller="Client"
+                  onsubmit="submitForm(this)">
+
+                <div class="centered-elements">
+                    <label>
+                        Select client*:
+                    </label>
+                    <select class="selectpicker"
+                            asp-items="@Model.Clients"
+                            name="ClientId"
+                            asp-for="ClientId"></select>
+                </div>
+                <br />
+                <div class="centered-elements">
+                    <label>
+                        Select Period*:
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           style="width: 48%; display: inline"
+                           name="DateFrom"
+                           id="date-from"
+                           autocomplete="off"
+                           onchange="UpdateTimeTo()">
+                    <p><strong> - </strong></p>
+                    <input type="text"
+                           class="form-control"
+                           style="width: 48%; display: inline"
+                           name="DateTo"
+                           id="date-to"
+                           autocomplete="off"
+                           onchange="UpdateTimeFrom()">
+                </div>
+                <div class="centered-elements">
+                    <p>Business days selected: </p>
+                    <strong id="working-days"> </strong>
+                </div>
+                <br />
+
+                <div class="centered-elements">
+                    <label>Select analysis type : </label>
+                    <label class="radio-inline">
+                        <input id="radio1" name="radio" type="radio" value="Cumulative" checked>Cumulative analysis
+                    </label>
+                    <label class="radio-inline">
+                        <input id="radio2" name="radio" type="radio" value="PerEmp">Analysis per employee
+                    </label>
+                </div>
+                <br />
+                <div style="text-align: right">
+                    <input class="btn btn-success" type="submit" name="Save" value="Submit" />
+                </div>
+
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    function submitForm(form) {
+        var radio1Element = document.getElementById("radio1");
+        var radio2Element = document.getElementById("radio2");
+
+        if (radio1Element.checked && !radio2Element.checked) {
+            form.action = "TimeShiftItemsChartForClientView";
+        }
+        else if (!radio1Element.checked && radio2Element.checked) {
+            form.action = "TimeShiftItemsChartForClientPerEmployeeView";
+        }
+
+        return true;
+    }
+</script>
+<script>
+    configureDatePickerAndSetToFirstDayOfMonth("date-from");
+    configureDatePickerAndSetToLastDayOfMonth("date-to");
+
+    updateBusinessDayElement($("#date-from").datepicker('getDate'), $("#date-to").datepicker('getDate'));
+</script>

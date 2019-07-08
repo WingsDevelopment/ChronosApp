@@ -1,0 +1,180 @@
+﻿@model ListOfInvoicesViewModel
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Invoices</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <form class="w3-container" style="text-align:left" method="get"
+                  asp-controller="Invoice"
+                  asp-action="CreateInvoice">
+                <input class="btn btn-primary" type="submit" name="Add" value="Add new" />
+            </form>
+            <br />
+            <br />
+            <table class="table table-bordered" id="dataTable" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Demand</th>
+                        <th>Paid</th>
+                        <th>Creation Date</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var invoice in Model.Invoices)
+                    {
+                        <tr>
+                            <td>@invoice.Demand</td>
+                            <td>@invoice.Paid</td>
+                            <td>@invoice.CreationDate</td>
+                            <td width="10%">
+                                <button type="button"
+                                        class="btn btn-info"
+                                        data-toggle="modal"
+                                        data-target="#discriptionModal"
+                                        onclick="return ShowDiscription('@invoice.Discription');">
+                                    Discription
+                                </button>
+                            </td>
+                            <td width="10%">
+                                <button type="button"
+                                        class="btn btn-primary"
+                                        data-toggle="modal"
+                                        data-target="#exampleModal"
+                                        onclick="return InitPopup(@invoice.Id, @invoice.Demand,
+                                        '@invoice.Paid', '@invoice.CreationDate', '@invoice.Discription',
+                                        '@invoice.IsDeleted');">
+                                    Edit
+                                </button>
+                            </td>
+                            <td width="10%">
+                                <form class="w3-container" style="text-align:left" method="get"
+                                      asp-controller="Invoice"
+                                      asp-action="DeleteInvoice"
+                                      asp-route-id="@invoice.Id">
+                                    <input class="btn btn-danger" type="submit" name="Delete" value="Delete" />
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit off time</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <p>Demand*: </p>
+                            <input type="number" class="form-control" id="modal-demand"
+                                   placeholder="Demand" style="width: 100%; display: inline"
+                                   name="Demand" />
+                            <br />
+                            <br />
+                            <p>Paid*: </p>
+                            <input type="number" class="form-control" id="modal-paid"
+                                   placeholder="Paid" style="width: 100%; display: inline"
+                                   name="Paid" />
+                            <br />
+                            <br />
+
+                            <label>Discription: </label>
+                            <br />
+                            <textarea type="text" class="form-control"
+                                      placeholder="Discription" style="width: 100%; display: inline"
+                                      rows="5" cols="50"
+                                      name="Discription"
+                                      id="modal-discription"></textarea>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="modal-save" onclick="updateInvoice()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="discriptionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Discription</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="message-text" class="col-form-label">Discription:</label>
+                                <textarea readonly class="form-control" id="medal-discription-discription"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var currentSelectedInvoice = {};
+
+    function ShowDiscription(discription) {
+        document.getElementById("medal-discription-discription").value = discription;
+    }
+
+    function InitPopup(id, demand, paid, creationDate, discription, isDeleted) {
+        document.getElementById("modal-discription").value = discription;
+
+        document.getElementById("modal-paid").value = paid;
+
+        document.getElementById("modal-demand").value = demand;
+
+        currentSelectedInvoice = { id: id, isDeleted: isDeleted, creationDate : creationDate }
+    }
+
+    function updateInvoice() {
+        if (currentSelectedInvoice == null) {
+            return;
+        }
+
+        var viewModel = {
+            id: currentSelectedInvoice.id,
+            discription: document.getElementById("modal-discription").value,
+            paid: document.getElementById("modal-paid").value,
+            demand: document.getElementById("modal-demand").value,
+            creationDate: currentSelectedInvoice.creationDate,
+            isDeleted: currentSelectedInvoice.isDeleted
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "/Invoice/UpdateInvoice",
+            data: viewModel,
+            contentType: "application/json",
+
+            success: function (result) {
+                location.reload();
+            },
+            error: function (result) {
+                alert('Error: ', result.message);
+            }
+        });
+    }
+</script>

@@ -1,0 +1,390 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Chronos.WebClient</title>
+
+    @*<link rel="stylesheet" href="~/css/site.css" />*@
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Chronos</title>
+    <!-- Custom fonts for this template-->
+    <link href="~/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <!-- Custom styles for this template-->
+    <link href="~/css/bootstrap-select.min.css" rel="stylesheet">
+    <link href="~/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="~/css/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/css/iziToast.min.css" rel="stylesheet" />
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="~/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="~/js/moment.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
+
+    <!--Bootstrap-->
+    <script src="~/vendor/bootstrap/js/bootstrap-select.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/js/iziToast.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="~/js/sb-admin-2.min.js"></script>
+
+    <script src="~/js/site.js"></script>
+
+    <style>
+        p {
+            display: inline;
+            margin-bottom: 10px;
+        }
+        .radio-inline{
+            margin-left: 10px;
+        }
+
+        .centered-elements {
+            margin: auto;
+            text-align: left;
+        }
+        label {
+            display: block;
+            text-align: left;
+        }
+
+        input {
+            text-align: left;
+        }
+
+        .selectpicker {
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" asp-controller="home" asp-action="index">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-house-damage"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">SCH app<sup></sup></div>
+            </a>
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">
+                Enter time
+            </div>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="TimeShiftItem" asp-action="Index">
+                    <i class="fas fa-fw fa-marker"></i>
+                    <span>Enter working hours</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="OffTime" asp-action="Index">
+                    <i class="fas fa-fw fa-bath"></i>
+                    <span>Enter day off</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+            <div class="sidebar-heading">
+                My Time Shift Analysis
+            </div>
+
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="TimeShiftItem" asp-action="TimeShiftItemsThisMonth">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Monthly table view</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="TimeShiftItem" asp-action="TimeShiftItemsThisMonthChartView">
+                    <i class="fas fa-fw fa-chart-pie"></i>
+                    <span>Monthly chart view</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="TimeShiftItem" asp-action="TimeShiftItemsForPeriod">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Periodic Analysis</span>
+                </a>
+            </li>
+            @if (User.IsInRole("Administrator"))
+            {
+                <!-- Divider -->
+                <hr class="sidebar-divider d-none d-md-block">
+                <div class="sidebar-heading">
+                    Analysis
+                </div>
+
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Client" asp-action="TimeShiftItemsByClient">
+                        <i class="fas fa-fw fa-chart-pie"></i>
+                        <span>Client Analysis</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Project" asp-action="TimeShiftItemsByProject">
+                        <i class="fas fa-fw fa-chart-pie"></i>
+                        <span>Project Analysis</span>
+                    </a>
+                </li>
+
+                <!-- Divider -->
+                <hr class="sidebar-divider">
+                <div class="sidebar-heading">
+                    Expenses & Invoices
+                </div>
+
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Expense" asp-action="Index">
+                        <i class="fas fa-fw fa-dollar-sign"></i>
+                        <span>Expenses</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Invoice" asp-action="Index">
+                        <i class="fas fa-fw fa-file-invoice"></i>
+                        <span>Invoices</span>
+                    </a>
+                </li>
+            }
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+            <div class="sidebar-heading">
+                My Off Days Analysis
+            </div>
+
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="OffTime" asp-action="OffTimesAllTime">
+                    <i class="fas fa-fw fa-bath"></i>
+                    <span>Off Days Analysis</span>
+                </a>
+            </li>
+
+            @if (User.IsInRole("Administrator"))
+            {
+                <!-- Divider -->
+                <hr class="sidebar-divider d-none d-md-block">
+                <div class="sidebar-heading">
+                    Admin stuff
+                </div>
+
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Employee" asp-action="Index">
+                        <i class="fas fa-fw fa-user"></i>
+                        <span>User Managment</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="ExpenseType" asp-action="Index">
+                        <i class="fas fa-fw fa-dollar-sign"></i>
+                        <span>Expense type Managment</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Project" asp-action="Index">
+                        <i class="fas fa-fw fa-battery-full"></i>
+                        <span>Project Managment</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Team" asp-action="Index">
+                        <i class="fas fa-fw fa-place-of-worship"></i>
+                        <span>Team Managment</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Client" asp-action="Index">
+                        <i class="fas fa-fw fa-dog"></i>
+                        <span>Client Managment</span>
+                    </a>
+                </li>
+            }
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            @*<div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle" onclick="toggleSideBar()"></button>
+            </div>*@
+        </ul>
+        <!-- End of Sidebar -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <!-- Topbar Search -->
+                        <div class="input-group" id="chrono-filter-data" style="display: none;">
+                            <p style="margin-right: 5px"><strong>Report for</strong> [ </p>
+                        </div>
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                        <li class="nav-item dropdown no-arrow d-sm-none">
+                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-search fa-fw"></i>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+                                <form class="form-inline mr-auto w-100 navbar-search">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button">
+                                                <i class="fas fa-search fa-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+                        <!-- Nav Item - User Information -->
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            @await Html.PartialAsync("_LoginPartial")
+                        }
+                        else
+                        {
+                            <li class="nav-item dropdown no-arrow">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">@User.Identity.Name</span>
+                                </a>
+                                <!-- Dropdown - User Information -->
+                                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                    <a class="dropdown-item" asp-controller="Manage" asp-action="Index">
+                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Profile
+                                    </a>
+                                    <a class="dropdown-item" asp-controller="TimeShiftItem" asp-action="TimeShiftItemsThisMonth">
+                                        <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Monthly time shifts
+                                    </a>
+                                    <a class="dropdown-item"
+                                       asp-controller="OffTime" asp-action="OffTimesAllTime">
+                                        <i class="fas fa-bath fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Off days
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="Logout" method="get">
+                                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Logout
+                                    </a>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+                <!-- End of Topbar -->
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <div class="container">
+                        @if (TempData["Success"] != null)
+                        {
+
+                            @foreach (var message in @TempData["Success"].ToString().Split(Environment.NewLine))
+                            {
+                                if (!string.IsNullOrEmpty(message))
+                                {
+                                    <script>
+                                        iziToast.success({
+                                            message: '@message',
+                                        });
+                                    </script>
+                                }
+                            }
+
+                        }
+                        @if (TempData["Error"] != null)
+                        {
+                            @foreach (var message in @TempData["Error"].ToString().Split(Environment.NewLine))
+                            {
+                                if (!string.IsNullOrEmpty(message))
+                                {
+                                    <script>
+                                        iziToast.error({
+                                            message: '@message',
+                                        });
+                                    </script>
+                                }
+                            }
+                        }
+                        @if (TempData["Info"] != null)
+                        {
+
+                            @foreach (var message in @TempData["Info"].ToString().Split(Environment.NewLine))
+                            {
+                                if (!string.IsNullOrEmpty(message))
+                                {
+                                    <script>
+                                        iziToast.info({
+                                            message: '@message',
+                                        });
+                                    </script>
+                                }
+                            }
+                        }
+                        <partial name="_CookieConsentPartial" />
+                        <main role="main" class="pb-3">
+                            @RenderBody()
+                        </main>
+                    </div>
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- End of Main Content -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span id="test-visible">Copyright © SCH 2019</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+        <a class="scroll-to-top rounded" href="#page-top" id="scrollToTopButton" style="display: inline;" onclick="scrollToTop()">
+            <i class="fas fa-angle-up"></i>
+        </a>
+    </div>
+
+    <script>
+
+        const scrollToTop = () => {
+            const c = document.documentElement.scrollTop || document.body.scrollTop;
+            if (c > 0) {
+                window.requestAnimationFrame(scrollToTop);
+                window.scrollTo(0, c - c / 8);
+            }
+        };
+
+        function toggleSideBar() {
+            var sideBar = document.getElementById("accordionSidebar");
+
+            if (sideBar.classList.contains('navbar-nav bg-gradient-primary sidebar sidebar-dark accordion')) {
+                sideBar.classList.remove('navbar-nav bg-gradient-primary sidebar sidebar-dark accordion');
+                sideBar.classList.add('navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled');
+            }
+            else {
+                sideBar.classList.remove('navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled');
+                sideBar.classList.add('navbar-nav bg-gradient-primary sidebar sidebar-dark accordion');
+            }
+        }
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
